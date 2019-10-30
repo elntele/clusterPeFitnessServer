@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bons"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cbic15"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ClusterPe"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jmetal-algorithm"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jmetal-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jmetal-exec"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jmetal-problem"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/elnte/eclipse-workspace/clusterPeFitnessServer/biblioteca/jackson-annotations-2.8.11.jar"/>
+	<classpathentry kind="lib" path="C:/Users/elnte/eclipse-workspace/clusterPeFitnessServer/biblioteca/jackson-core-2.8.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/elnte/eclipse-workspace/clusterPeFitnessServer/biblioteca/jackson-databind-2.8.11.3.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
