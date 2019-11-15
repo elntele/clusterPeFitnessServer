@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.uma.jmetal.problem.Problem;
@@ -111,9 +112,26 @@ class Connection extends Thread {
 				GmlData gml = mapper.readValue(l1.get(1), GmlData.class);
 				List<Pattern>[] clustters = mapper.readValue(l1.get(2), new TypeReference<List<Pattern>[]>() {
 				});
-				String fixedNetwork = mapper.readValue(l1.get(3), String.class);
+				//mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);//novo
+				String prop1 = mapper.readValue(l1.get(3), String.class);
+				
+				System.out.println(prop1);
+				prop1.trim();
+				prop1=prop1.replaceAll("\\s+","");
+				prop1=prop1.replace("{", "");
+				prop1=prop1.replace("}", "");
+				
+				
+				String [] prop2 = prop1.split(",");
+				Properties prop = new Properties();
+				for (int i=0;i<prop2.length;i++) {
+					String [] bufer=prop2[i].split("=");
+					prop.setProperty(bufer[0], bufer[1]);
+				}
+		
+				
 				Problem<IntegerSolution> problem;
-				problem = new SearchForNetworkAndEvaluate(kmeans, gml, clustters, fixedNetwork);
+				problem = new SearchForNetworkAndEvaluate(kmeans, gml, clustters, prop);
 				GenericProblem receivedGp = new GenericProblem(problem);
 				gpMap.put(receivedGp.getId(), receivedGp);
 				String SucessNewInstanceProblem = receivedGp.getId().toString();
