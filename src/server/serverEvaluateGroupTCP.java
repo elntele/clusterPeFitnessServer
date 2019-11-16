@@ -115,7 +115,7 @@ class Connection extends Thread {
 				//mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);//novo
 				String prop1 = mapper.readValue(l1.get(3), String.class);
 				
-				System.out.println(prop1);
+			//	System.out.println(prop1);
 				prop1.trim();
 				prop1=prop1.replaceAll("\\s+","");
 				prop1=prop1.replace("{", "");
@@ -154,7 +154,7 @@ class Connection extends Thread {
 			try { // an echo server
 				List<String> l = mapper.readValue(requestJson, new TypeReference<List<String>>() {});
 				List<DefaultIntegerSolution> population = mapper.readValue(l.get(1),new TypeReference<List<DefaultIntegerSolution>>() {});
-				System.out.println("passei");
+				System.out.println("recevipara avaliar " + population.size());
 				UUID id = UUID.fromString(l.get(0));
 				GenericProblem p = gpMap.get(id);
 				for (DefaultIntegerSolution s : population) {
