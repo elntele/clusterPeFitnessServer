@@ -52,7 +52,7 @@ class Connection extends Thread {
 	DataInputStream in;
 	DataOutputStream out;
 	Socket clientSocket;
-	Map<UUID, GenericProblem> gpMap ;
+	Map<UUID, GenericProblem> gpMap;
 	String msg;
 	boolean createProblemStance = true;
 
@@ -98,38 +98,30 @@ class Connection extends Thread {
 			e1.printStackTrace();
 		}
 
-		try {
-			Kmeans kmens = mapper.readValue(l1.get(0), Kmeans.class);
-
-		} catch (IOException e) {
-			this.createProblemStance = false;
-		}
-
-		if (createProblemStance) {
+		// the l1 list's head contains the order to execute operation
+		if (l1.get(0).equals("createproblem")) {
 
 			try { // an echo server
-				Kmeans kmeans = mapper.readValue(l1.get(0), Kmeans.class);
-				GmlData gml = mapper.readValue(l1.get(1), GmlData.class);
-				List<Pattern>[] clustters = mapper.readValue(l1.get(2), new TypeReference<List<Pattern>[]>() {
+				Kmeans kmeans = mapper.readValue(l1.get(1), Kmeans.class);
+				GmlData gml = mapper.readValue(l1.get(2), GmlData.class);
+				List<Pattern>[] clustters = mapper.readValue(l1.get(3), new TypeReference<List<Pattern>[]>() {
 				});
-				//mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);//novo
-				String prop1 = mapper.readValue(l1.get(3), String.class);
-				
-			//	System.out.println(prop1);
+				// mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);//novo
+				String prop1 = mapper.readValue(l1.get(4), String.class);
+
+				// System.out.println(prop1);
 				prop1.trim();
-				prop1=prop1.replaceAll("\\s+","");
-				prop1=prop1.replace("{", "");
-				prop1=prop1.replace("}", "");
-				
-				
-				String [] prop2 = prop1.split(",");
+				prop1 = prop1.replaceAll("\\s+", "");
+				prop1 = prop1.replace("{", "");
+				prop1 = prop1.replace("}", "");
+
+				String[] prop2 = prop1.split(",");
 				Properties prop = new Properties();
-				for (int i=0;i<prop2.length;i++) {
-					String [] bufer=prop2[i].split("=");
+				for (int i = 0; i < prop2.length; i++) {
+					String[] bufer = prop2[i].split("=");
 					prop.setProperty(bufer[0], bufer[1]);
 				}
-		
-				
+
 				Problem<IntegerSolution> problem;
 				problem = new SearchForNetworkAndEvaluate(kmeans, gml, clustters, prop);
 				GenericProblem receivedGp = new GenericProblem(problem);
@@ -149,21 +141,75 @@ class Connection extends Thread {
 					/* close failed */}
 			}
 
-		} else {
+		}
+
+		if (l1.get(0).equals("EvaluateSolution")) {
 
 			try { // an echo server
-				List<String> l = mapper.readValue(requestJson, new TypeReference<List<String>>() {});
-				List<DefaultIntegerSolution> population = mapper.readValue(l.get(1),new TypeReference<List<DefaultIntegerSolution>>() {});
-				System.out.println("recevipara avaliar " + population.size());
-				UUID id = UUID.fromString(l.get(0));
+				List<String> l = mapper.readValue(requestJson, new TypeReference<List<String>>() {
+				});
+				List<DefaultIntegerSolution> population = mapper.readValue(l.get(2),
+						new TypeReference<List<DefaultIntegerSolution>>() {
+						});
+				System.out.println("recebi para avaliar " + population.size());
+				UUID id = UUID.fromString(l.get(1));
 				GenericProblem p = gpMap.get(id);
 				for (DefaultIntegerSolution s : population) {
 					p.getNetwork().evaluate((IntegerSolution) s);
 				}
-				String backtoclient= mapper.writeValueAsString(population);
+				String backtoclient = mapper.writeValueAsString(population);
 				byte[] b = backtoclient.getBytes(StandardCharsets.UTF_8);
 				out.writeInt(b.length); // write length of the message
 				out.write(b);
+			} catch (EOFException e) {
+				System.out.println("EOF:" + e.getMessage());
+			} catch (IOException e) {
+				System.out.println("readline:" + e.getMessage());
+			} finally {
+				try {
+					clientSocket.close();
+				} catch (IOException e) {
+					/* close failed */}
+			}
+
+		}
+
+		if (l1.get(0).equals("AreYouOnline")) {
+			try { // an echo server
+				String backtoclient = "true";
+				byte[] b = backtoclient.getBytes(StandardCharsets.UTF_8);
+				out.writeInt(b.length); // write length of the message
+				out.write(b);
+			} catch (EOFException e) {
+				System.out.println("EOF:" + e.getMessage());
+			} catch (IOException e) {
+				System.out.println("readline:" + e.getMessage());
+			} finally {
+				try {
+					clientSocket.close();
+				} catch (IOException e) {
+					/* close failed */}
+			}
+
+		}
+		
+		if (l1.get(0).equals("DoYouHaveThisIdProblem")) {
+			try { // an echo server
+				if(this.gpMap.containsKey(UUID.fromString(l1.get(1)))){
+					String backtoclient = "true";
+					byte[] b = backtoclient.getBytes(StandardCharsets.UTF_8);
+					out.writeInt(b.length); // write length of the message
+					out.write(b);
+				}else {
+					String backtoclient = "false";
+					byte[] b = backtoclient.getBytes(StandardCharsets.UTF_8);
+					out.writeInt(b.length); // write length of the message
+					out.write(b);
+					
+				}
+				
+				
+				
 			} catch (EOFException e) {
 				System.out.println("EOF:" + e.getMessage());
 			} catch (IOException e) {
